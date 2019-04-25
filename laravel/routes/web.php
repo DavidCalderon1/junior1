@@ -29,5 +29,7 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('/home', 'HomeController@index')->name('home');
 
 
+Route::resource('empleados', 'EmpleadosController');
 
 Route::resource('empresas', 'EmpresasController');
+

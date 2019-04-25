@@ -6,14 +6,6 @@ use Illuminate\Database\Eloquent\Model as Model;
 
 /**
  * Class Empresas
- * @package App\Models
- * @version April 24, 2019, 5:06 pm -05
- *
- * @property \Illuminate\Database\Eloquent\Collection empleados
- * @property string name
- * @property string email
- * @property string logo
- * @property string website
  */
 class Empresas extends Model
 {
