@@ -12,8 +12,11 @@
 
 <!-- Logo Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('logo', 'Logo:') !!}
-    {!! Form::text('logo', null, ['class' => 'form-control']) !!}
+    <b>{!! Form::label('logo', 'Logo:') !!}</b>
+    <div class="custom-file">
+        {!! Form::label('logo', 'Elegir archivo', ['class' => 'custom-file-label', 'lang' => 'es']) !!}
+        {!! Form::file('logo',['class' => 'form-control custom-file-input','id'=>'logo','accept'=>'image/jpeg, image/jpg, image/png, image/gif']) !!}
+    </div>
 </div>
 
 <!-- Website Field -->
@@ -24,6 +27,6 @@
 
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
-    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('empresas.index') !!}" class="btn btn-default">Cancel</a>
+    {!! Form::submit('Guardar', ['class' => 'btn btn-primary']) !!}
+    <a href="{!! route('empresas.index') !!}" class="btn btn-outline-secondary">Cancelar</a>
 </div>

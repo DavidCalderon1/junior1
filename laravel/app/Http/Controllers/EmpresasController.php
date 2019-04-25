@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateEmpresasRequest;
 use App\Http\Requests\CreateEmpresasRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Flash;
 use Response;
@@ -20,7 +22,7 @@ class EmpresasController extends Controller
      */
     public function index(Request $request)
     {
-        $empresas = Empresas::all();
+        $empresas = Empresas::paginate(10);
 
         return view('empresas.index')
             ->with('empresas', $empresas);
@@ -49,6 +51,19 @@ class EmpresasController extends Controller
 
         $empresas = Empresas::create($input);
 
+        //guarda el logo
+        if ($request->file('logo')) {
+            $success = Storage::cleanDirectory($directory);
+
+            $nArchivo = $request->file('logo')->getClientOriginalName();
+            $filename = md5($nArchivo).'.'.$request->file('logo')->getClientOriginalExtension();
+
+            $request->file('logo')->storeAs('public/empresas/'.$empresas->id, $filename);
+            
+            $empresas->fill(['logo'=>$filename])->save();
+        }
+
+
         Flash::success('Empresa creada correctamente.');
 
         return redirect(route('empresas.index'));
@@ -71,7 +86,9 @@ class EmpresasController extends Controller
             return redirect(route('empresas.index'));
         }
 
-        return view('empresas.show')->with('empresas', $empresas);
+        $empresas->logo_url = url("storage/empresas/".$empresas->id."/".$empresas->logo);
+
+        return view('empresas.show', compact('empresas'));
     }
 
     /**
@@ -104,6 +121,16 @@ class EmpresasController extends Controller
      */
     public function update($id, UpdateEmpresasRequest $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'email|max:191|unique:empresas,email,' . $id
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect(route('empresas.edit',['id' => $id]))
+                ->withInput($request->input())
+                ->withErrors($validator);
+        }
+
         $empresas = Empresas::find($id);
 
         if (empty($empresas)) {
@@ -112,7 +139,26 @@ class EmpresasController extends Controller
             return redirect(route('empresas.index'));
         }
 
-        $empresas = $empresas->update($request->all(), $id);
+        $input = $request->all();
+
+        //guarda el logo
+        if ($request->file('logo')) {
+
+            // limpia el directorio, elimina los archivos
+            $dir_path = storage_path()."/app/public/empresas/".$empresas->id;
+            $fs = new Filesystem();
+            $fs->cleanDirectory($dir_path);
+            
+            // obtiene los datos del archivo y encripta el nombre para no tener errores de lectura
+            $nArchivo = $request->file('logo')->getClientOriginalName();
+            $filename = md5($nArchivo).'.'.$request->file('logo')->getClientOriginalExtension();
+
+            $request->file('logo')->storeAs('public/empresas/'.$empresas->id, $filename);
+            
+            $input['logo'] = $filename;
+        }
+
+        $empresas = $empresas->update($input);
 
         Flash::success('Empresa actualizada correctamente.');
 
@@ -138,7 +184,7 @@ class EmpresasController extends Controller
 
         $empresas->delete($id);
 
-        Flash::success('Empresas eliminada correctamente.');
+        Flash::success('Empresa eliminada correctamente.');
 
         return redirect(route('empresas.index'));
     }

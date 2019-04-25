@@ -1,24 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-    <section class="content-header">
-        <h1>
-            Empresas
-        </h1>
-    </section>
-    <div class="content">
-        @include('flash::message')
-        <div class="box box-primary">
+    <div class="card">
+        <section class="card-header">
+            <h1>
+                Empresas
+            </h1>
+        </section>
+        <div class="card-body">
+            
+            {!! Form::open(['route' => 'empresas.store', 'enctype'=>'multipart/form-data']) !!}
+                <div class="container">
+                    <div class="row">
 
-            <div class="box-body">
-                <div class="row">
-                    {!! Form::open(['route' => 'empresas.store']) !!}
+                            @include('empresas.fields')
 
-                        @include('empresas.fields')
-
-                    {!! Form::close() !!}
+                    </div>
                 </div>
-            </div>
+            {!! Form::close() !!}
         </div>
     </div>
 @endsection

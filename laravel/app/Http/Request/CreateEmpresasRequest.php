@@ -25,6 +25,11 @@ class CreateEmpresasRequest extends FormRequest
      */
     public function rules()
     {
-        return Empresas::$rules;
+        $rules = [
+            'name' => 'required',
+            'email' => 'unique:empresas|email',
+        ];
+
+        return $rules;
     }
 }
